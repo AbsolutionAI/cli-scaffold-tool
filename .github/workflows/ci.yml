@@ -6,3 +6,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: make smoke
+  generated-api:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend: [express, fastify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: scaffold
+        run: node bin/create-turbo-stack.js /tmp/gen --yes --frontend react --backend ${{ matrix.backend }} --db sqlite
+      - name: generated API config tests (no install needed)
+        run: node --test /tmp/gen/apps/api/tests/*.test.js

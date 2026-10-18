@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { prisma } from './db.js';
+import { jwtSecret as secret } from './config.js';
 
-const secret = process.env.JWT_SECRET || 'dev-secret';
 const creds = z.object({ email: z.string().email(), password: z.string().min(8), name: z.string().optional() });
 
 export function sign(user) {

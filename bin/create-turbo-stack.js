@@ -62,7 +62,7 @@ function writeMergedRoot(target, cfg) {
   fs.writeFileSync(path.join(target, 'package.json'), JSON.stringify(pkg, null, 2));
   fs.writeFileSync(
     path.join(target, '.env.example'),
-    `PORT=4000\nJWT_SECRET=change-me\nDATABASE_URL=file:./dev.db\nCLIENT_URL=http://localhost:5173\n`
+    `PORT=4000\n# Set 32+ random characters before deploying:\n#   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"\n# With NODE_ENV=production the API refuses to start on a placeholder.\nJWT_SECRET=change-me\nDATABASE_URL=${cfg.databaseUrl}\nCLIENT_URL=http://localhost:5173\n`
   );
   fs.writeFileSync(
     path.join(target, '.gitignore'),
@@ -116,7 +116,7 @@ async function main() {
 
   copyDir(path.join(TEMPLATES, `frontend-${frontend}`), path.join(target, 'apps/web'), vars);
   copyDir(path.join(TEMPLATES, `backend-${backend}`), path.join(target, 'apps/api'), vars);
-  writeMergedRoot(target, { name, frontend, backend, db });
+  writeMergedRoot(target, { name, frontend, backend, db, databaseUrl: vars.DATABASE_URL });
 
   // patch prisma provider if needed
   const schemaPath = path.join(target, 'apps/api/prisma/schema.prisma');
